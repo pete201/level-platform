@@ -1,3 +1,8 @@
+/*
+Changes:
+
+02/11/21    no-cal-init aims to remove initial levelling calibration and rely on static settings with aim to have absolute level
+*/
 // I2C device class (I2Cdev) demonstration Arduino sketch for MPU6050 class using DMP (MotionApps v6.12)
 // 6/21/2012 by Jeff Rowberg <jeff@rowberg.net>
 // Updates should (hopefully) always be available at https://github.com/jrowberg/i2cdevlib
@@ -151,8 +156,6 @@ void setup() {
         Fastwire::setup(400, true);
     #endif
 
-    
-
     Serial.begin(115200);       // initialize serial communication
     while (!Serial);            // wait for Leonardo enumeration, others continue immediately
 
@@ -170,17 +173,29 @@ void setup() {
     devStatus = mpu.dmpInitialize();
 
     // supply your own gyro offsets here, scaled for min sensitivity
+/*     these were the offsets from the library
     mpu.setXGyroOffset(51);
     mpu.setYGyroOffset(8);
     mpu.setZGyroOffset(21);
     mpu.setXAccelOffset(1150); 
     mpu.setYAccelOffset(-50); 
-    mpu.setZAccelOffset(1060); 
+    mpu.setZAccelOffset(1060);  
+*/
+// these are offsets i got from my device from printout of the "mpu.Calibrate-xxx" lines below:
+    mpu.setXGyroOffset(36);
+    // -2000 gives some erratic behavior with servo going to max posn and back to zero, no sig change in zero posn
+    //+2000 gives same behaviour just once but then seems to work ok.  no sig change in zero posn
+    mpu.setYGyroOffset(-35);
+    mpu.setZGyroOffset(64);
+    mpu.setXAccelOffset(5014); 
+    mpu.setYAccelOffset(5774); 
+    mpu.setZAccelOffset(8970);
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        mpu.CalibrateAccel(6);
-        mpu.CalibrateGyro(6);
+        // i commented these lines out to remove active offset cal
+        //mpu.CalibrateAccel(6);
+        //mpu.CalibrateGyro(6);
         Serial.println();
         mpu.PrintActiveOffsets();
         // turn on the DMP, now that it's ready
@@ -223,6 +238,9 @@ void setup() {
     servo1.write(90);
     servo2.write(90);
     // Centres the servos - this does not seem to be necessary; they centre anyway
+
+    //test servo centre posn:
+    //dmpReady=false;
 }
 
 
