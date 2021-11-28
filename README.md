@@ -2,5 +2,7 @@
 a platform that levels
 
 hardware
-I already have a MPU6050
-a button on pin 12 (D6) that pulls D6 low when pressed
+I already have a MPU6050/9250
+using library from hideakitai: https://github.com/hideakitai/MPU9250
+servos: sg90 microservos
+
